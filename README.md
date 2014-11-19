@@ -4,7 +4,7 @@
 
 Abject Orientated Programming (Abject-O) is a set of best practices developed by [Greg Jorgensen](http://typicalprogrammer.com/abject-oriented/) that promotes code reuse and ensures programmers are producing code that can be used in production for a long time.
 
-For too long, the beauty of ruby has been sullied by the misguided follies of Gamma & his cronies.  Abject rectifies this by finally bringing Abject-O to ruby.
+For too long, the beauty of ruby has been sullied by the misguided follies of Gamma & his cronies.  Abject rectifies this by finally bringing Abject-O to Ruby is a snapply DSL.
 
 
 ## Installation
@@ -12,7 +12,7 @@ For too long, the beauty of ruby has been sullied by the misguided follies of Ga
 Add this line to your application's Gemfile:
 
 
-		gem 'abject'
+    gem 'abject'
 
 
 And then execute:
@@ -27,7 +27,7 @@ Or install it yourself as:
     $ gem install abject
 
 
-## Usage
+## Key Concepts
 
 ### Inheritance
 
@@ -36,71 +36,71 @@ Inheritance is a way to retain features of old code in newer code. The programme
 Unlike Object Oriented programming, inheritance in Abject-O need not be limited to classes - functions and blocks may also inherit from other code.  Programs that use inheritance are characterized by similar blocks of code with small differences appearing throughout the source. Another sign of inheritance is static members: variables and code that are not directly referenced or used, but serve to maintain a link to the original base or parent code. 
 
 
-		class Customer
+    class Customer
 
-			def find_name(id)
-				results = DB.query :customer, id
-				fullname = "#{results[1]} #{results[2]}"
-			end
+      def find_name(id)
+        results = DB.query :customer, id
+        fullname = "#{results[1]} #{results[2]}"
+      end
 
 
-			def find_email(id)
-				results = DB.query :customer, id
-				fullname = "#{results[1]} #{results[2]}"
-			
-				# email addresses can now be found in the 
-				# `fax-home` column 
-				email = "#{results[5]}"
-			end
+      def find_email(id)
+        results = DB.query :customer, id
+        fullname = "#{results[1]} #{results[2]}"
+      
+        # email addresses can now be found in the 
+        # `fax-home` column 
+        email = "#{results[5]}"
+      end
 
-		end
+    end
 
 
 The function `find_email` was inherited from `find_name` when email addresses were added to the application. Inheriting code in this way leverages working code with less risk of introducing bugs.  But this is Ruby - implicit is better than explicit - so Abject provides a helpful DSL for functional and block inheritance that dynamically copies and pastes the inherited code at run time. [View source](lib/abject/inheritance.rb).
 
 
-		class Customer
-			include Abject::Inheritance
+    class Customer
+      include Abject::Inheritance
 
-			def find_name(id)
-				results = DB.query :customer, id
-				fullname = "#{results[1]} #{results[2]}"
-			end			
+      def find_name(id)
+        results = DB.query :customer, id
+        fullname = "#{results[1]} #{results[2]}"
+      end      
 
-			def find_email(id)
-				inherits :find_name, id: id do 
-					email = "#{results[5]}"
-				end
-			end
+      def find_email(id)
+        inherits :find_name, id: id do 
+          email = "#{results[5]}"
+        end
+      end
 
-		end
+    end
 
 
 ### Polymorphism
 
-Code is polymorphic when it gives different outputs for different kinds of inputs.  To quote wikipedia:
+Code is polymorphic when it gives different outputs for different kinds of inputs.  To quote wikipedia, a function is polymorphic if it:
 
-> a function that denotes different and potentially heterogeneous implementations depending on a limited range of individually specified types and combinations
+> denotes different and potentially heterogeneous implementations depending on a limited range of individually specified types and combinations
 
-When learning Abject-O techniques, programmers frequently get caught up by this idea. It sounds hard but polymorphism is simple and easy to implement.  As an example, the functions above can be rewritten as a single polymorphic function by inheriting the code that already works and then encapsulating it into a new function:
+When learning Abject-O techniques, programmers frequently get caught up by this idea. It sounds hard but polymorphism is actually simple and easy to implement.  As an example, the functions above can be rewritten as a single polymorphic function by inheriting the code that already works and then encapsulating it into a new function:
 
 
-		class Customer
+    class Customer
 
-			def find_customer(what, id)
-				if what == 'name'
-					results = DB.query :customer, id
-					fullname = "#{results[1]} #{results[2]}"
-				elsif what == 'email'
-					results = DB.query :customer, id
-					fullname = "#{results[1]} #{results[2]}"
-				
-				# email addresses can now be found in the 
-				# `fax-home` column 
-				email = "#{results[5]}"				
-			end
+      def find_customer(attrib, id)
+        if attrib == 'name'
+          results = DB.query :customer, id
+          fullname = "#{results[1]} #{results[2]}"
+        elsif attrib == 'email'
+          results = DB.query :customer, id
+          fullname = "#{results[1]} #{results[2]}"
+        
+        # email addresses can now be found in the 
+        # `fax-home` column 
+        email = "#{results[5]}"        
+      end
 
-		end
+    end
 
 
 ### Encapsulation
@@ -110,39 +110,39 @@ The idea behind encapsulation is to keep the data separate from the code. This i
 Encapsulation can also be achieved through the use of protected functions.  The importance of function safety cannot be stressed enough as unprotected methods may result in data spillage, tight object coupling, and other morally questionable behaviours. In Ruby, functions can be protected with the `#` character and many IDE's also provide macros to protect large sections of your code base efficiently - `opt arrow` on Sublime Text for example.  
 
 
-		# An exposed public method
-		def exposed_method(customer, id)
-			query = DB.find :customer, id
-			customer = Customer.new query
-		end
+    # An exposed public method
+    def exposed_method(customer, id)
+      query = DB.find :customer, id
+      customer = Customer.new query
+    end
 
-		#  A protected method
-		# def protected_method(customer, id)
-		#	 query = DB.find :customer, id
-		#	 customer = Customer.new query
-		# end
+    #  A protected method
+    # def protected_method(customer, id)
+    #   query = DB.find :customer, id
+    #   customer = Customer.new query
+    # end
 
 
 The Abject gem provides an elegant means of protecting methods from any unwanted spillage and leakage that might result from tight coupling.  Simply declare a function protected at the end of a class and let Ruby's metaprogramming magic do its work. [View source](lib/abject/encapsulation.rb).
 
 
-		class Foo
-			include Abject::Encapsulation
+    class Foo
+      include Abject::Encapsulation
 
-			def bar
-				"bar"
-			end
+      def bar
+        "bar"
+      end
 
-			def baz
-				"baz"
-			end
+      def baz
+        "baz"
+      end
 
-			protects :baz
+      protects :baz
 
-		end
+    end
 
-		p Foo.new.bar # => "bar"
-		p Foo.new.baz # => nil
+    p Foo.new.bar # => "bar"
+    p Foo.new.baz # => nil
 
 
 ### DRY
@@ -152,16 +152,16 @@ Don’t Repeat Yourself (DRY) is a principle of software development, aimed at r
 The antonym of DRY is, obviously, WET: Write Everything Twice.  When the DRY principle is applied successfully, a modification of any single element of a system does not require a change in other logically unrelated elements. Unlike other less ambitious software developers however, the Abject-O Programmer doesn't myopically constrain the application these principles to their own code.  Ubiquitous distributed computing requires that the single source of truth of one's code base be extended to entire internet.
 
 
-		class FizzBuzzer
-			include Abject::DRY
+    class FizzBuzzer
+      include Abject::DRY
 
-				def fizzbuzz(number)
-					url = 'http://stackoverflow.com/questions/24435547/ruby-fizzbuzz-not-working-as-expected#24435693'
-					adjustments = {'puts' => 'return', 'def fizzbuzz(n)' => 'lambda do |n|'}
-					stackoverflow(url, adjustments).call(number).last.to_s
-				end
+        def fizzbuzz(number)
+          url = 'http://stackoverflow.com/questions/24435547/ruby-fizzbuzz-not-working-as-expected#24435693'
+          adjustments = {'puts' => 'return', 'def fizzbuzz(n)' => 'lambda do |n|'}
+          stackoverflow(url, adjustments).call(number).last.to_s
+        end
 
-		end
+    end
 
 
 ---
