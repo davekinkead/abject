@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Abject::VERSION
   spec.authors       = ["Dave Kinkead"]
   spec.email         = ["dave@kinkead.com.au"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Abject Oriented Programming for the Rubyist}
+  spec.description   = %q{Abject provides a snappy DSL to make Abject-O a reality!}
+  spec.homepage      = "https://github.com/davekinkead/abject"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")

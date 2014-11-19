@@ -6,7 +6,7 @@ module Abject
 
     # Why copy & paste answers from stack overflow when you can curl & eval them!
     # Expects a url#answer-id and a hash of adjustments to the answer code to gsub over
-    def stackoverflow(url, adjustments)
+    def fuck_it_just_copy_something_from_stackoverflow(url, adjustments)
       # build the adjustment lambda
       edit = "lambda { |method_string| method_string"
       adjustments.each { |k,v| edit += ".gsub('#{k}', '#{v}')" }

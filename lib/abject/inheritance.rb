@@ -19,7 +19,7 @@ module Abject
     # Method chaining helps methods adhere to the single responsibility principle as well as
     # improving performance and saving memory by getting rid of all those pesky local variables.
     # Such eval! So performant! Much wow!
-    def inherits(parent, *args, &block)
+    def inherits_from(parent, *args, &block)
       eval("Proc.new { |#{args.first.keys.map { |k| k.to_s }.join ','}| #{parse_method method(parent).to_proc.source_location}\n#{parse_method block.source_location} }").call args
     end
   end
