@@ -1,6 +1,6 @@
 # Abject
 
-### Because you're doing all it wrong!
+### Because you're been doing all it wrong!
 
 Abject Orientated Programming (Abject-O) is a set of best practices developed by [Greg Jorgensen](http://typicalprogrammer.com/abject-oriented/) that promotes code reuse and ensures programmers are producing code that can be used in production for a long time.
 
@@ -36,20 +36,24 @@ Inheritance is a way to retain features of old code in newer code. The programme
 Unlike Object Oriented programming, inheritance in Abject-O need not be limited to classes - functions and blocks may also inherit from other code.  Programs that use inheritance are characterized by similar blocks of code with small differences appearing throughout the source. Another sign of inheritance is static members: variables and code that are not directly referenced or used, but serve to maintain a link to the original base or parent code. 
 
 
-		def find_name(id)
-			results = DB.query :customer, id
-			fullname = "#{results[:first_name]} #{results[:last_name]}"
+		class Customer
+
+			def find_name(id)
+				results = DB.query :customer, id
+				fullname = "#{results[:first_name]} #{results[:last_name]}"
+			end
+
+
+			def find_email(id)
+				results = DB.query :customer, id
+				fullname = "#{results[:first_name]} #{results[:last_name]}"
+				email = "#{results[:email]}"
+			end
+
 		end
 
 
-		def find_email(id)
-			results = DB.query :customer, id
-			fullname = "#{results[:first_name]} #{results[:last_name]}"
-			email = "#{results[:email]}"
-		end
-
-
-Abject provides a helper method for functional and block inheritance.
+The function `find_email` was inherited from `find_name` when email addresses were added to the application. Inheriting code in this way leverages working code with less risk of introducing bugs.  Abject provides a helpful DSL for functional and block inheritance.
 
 
 		class Customer
@@ -60,9 +64,10 @@ Abject provides a helper method for functional and block inheritance.
 				fullname = "#{results[:first_name]} #{results[:last_name]}"
 			end			
 
-
-			inherit :find_email, from: :find_name do 
-				email = "#{results[:email]}"
+			def find_email(id)
+				inherits :find_name, id: id do 
+					email = "#{results[:email]}"
+				end
 			end
 
 		end
