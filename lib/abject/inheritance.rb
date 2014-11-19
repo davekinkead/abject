@@ -1,3 +1,5 @@
+require 'abject/reader'
+
 module Abject
 
 	# Inheritance is a way to retain features of old code in newer code. The programmer derives 
@@ -12,21 +14,13 @@ module Abject
 	# Another sign of inheritance is static members: variables and code that are not directly 
 	# referenced or used, but serve to maintain a link to the original base or parent code. 
 	module Inheritance
+		include Abject::Reader
 
 		# Improve performance and save memory by getting rid of those pesky local variables!
-		# Method chaining #FTW! 
+		# Method chaining also helps methods adhere to the single responsibility principle.
 		# Such eval. So performant. Much wow!
 		def inherits(parent, *args, &block)
 			eval("Proc.new { |#{args.first.keys.map { |k| k.to_s }.join ','}| #{parse_method method(parent).to_proc.source_location}\n#{parse_method block.source_location} }").call args
 		end
-
-		private
-
-		# Save time copy & pasting old methods by doing it at run time!
-		# TODO: count block keywords for loops and conditionals
-		def parse_method(location)
-			File.readlines(location[0])[location[1]..-1].join.split("end\n").first
-		end
-
 	end
 end

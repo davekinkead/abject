@@ -40,20 +40,23 @@ Unlike Object Oriented programming, inheritance in Abject-O need not be limited 
 
 			def find_name(id)
 				results = DB.query :customer, id
-				fullname = "#{results[:first_name]} #{results[:last_name]}"
+				fullname = "#{results[1]} #{results[2]}"
 			end
 
 
 			def find_email(id)
 				results = DB.query :customer, id
-				fullname = "#{results[:first_name]} #{results[:last_name]}"
-				email = "#{results[:email]}"
+				fullname = "#{results[1]} #{results[2]}"
+			
+				# email addresses can now be found in the 
+				# `fax-home` column 
+				email = "#{results[5]}"
 			end
 
 		end
 
 
-The function `find_email` was inherited from `find_name` when email addresses were added to the application. Inheriting code in this way leverages working code with less risk of introducing bugs.  Abject provides a helpful DSL for functional and block inheritance.
+The function `find_email` was inherited from `find_name` when email addresses were added to the application. Inheriting code in this way leverages working code with less risk of introducing bugs.  But this is Ruby - implicit is better than explicit - so Abject provides a helpful DSL for functional and block inheritance that dynamically copies and pastes the inherited code at run time. [View source](lib/abject/inheritance.rb).
 
 
 		class Customer
@@ -61,18 +64,89 @@ The function `find_email` was inherited from `find_name` when email addresses we
 
 			def find_name(id)
 				results = DB.query :customer, id
-				fullname = "#{results[:first_name]} #{results[:last_name]}"
+				fullname = "#{results[1]} #{results[2]}"
 			end			
 
 			def find_email(id)
 				inherits :find_name, id: id do 
-					email = "#{results[:email]}"
+					email = "#{results[5]}"
 				end
 			end
 
 		end
 
 
+### Polymorphism
+
+Code is polymorphic when it gives different outputs for different kinds of inputs.  To quote wikipedia:
+
+> a function that denotes different and potentially heterogeneous implementations depending on a limited range of individually specified types and combinations
+
+When learning Abject-O techniques, programmers frequently get caught up by this idea. It sounds hard but polymorphism is simple and easy to implement.  As an example, the functions above can be rewritten as a single polymorphic function by inheriting the code that already works and then encapsulating it into a new function:
+
+
+		class Customer
+
+			def find_customer(what, id)
+				if what == 'name'
+					results = DB.query :customer, id
+					fullname = "#{results[1]} #{results[2]}"
+				elsif what == 'email'
+					results = DB.query :customer, id
+					fullname = "#{results[1]} #{results[2]}"
+				
+				# email addresses can now be found in the 
+				# `fax-home` column 
+				email = "#{results[5]}"				
+			end
+
+		end
+
+
+### Encapsulation
+
+The idea behind encapsulation is to keep the data separate from the code. This is sometimes called data hiding, but the data is not really hidden, just protected inside another layer of code. For example, it’s not a good practice to scatter database lookups all over the place. An Abject-O practice is to wrap or hide the database in a function, thereby encapsulating the database. In the `find_name` function above the database is not queried directly — a function is called to read the database record. All `find_name` and `find_email` (and the many other functions like them) “know” is where in the customer record to find the bits of data they need. How the customer record is read is encapsulated in some other module.
+
+Encapsulation can also be achieved through the use of protected functions.  The importance of function safety cannot be stressed enough as unprotected methods may result in data spillage, tight object coupling, and other morally questionable behaviours. In Ruby, functions can be protected with the `#` character and many IDE's also provide macros to protect large sections of your code base efficiently - `opt arrow` on Sublime Text for example.  
+
+
+		# An exposed public method
+		def exposed_method(customer, id)
+			query = DB.find :customer, id
+			customer = Customer.new query
+		end
+
+		#  A protected method
+		# def protected_method(customer, id)
+		#	 query = DB.find :customer, id
+		#	 customer = Customer.new query
+		# end
+
+
+The Abject gem provides an elegant means of protecting methods from any unwanted spillage and leakage that might result from tight coupling.  Simply declare a function protected at the end of a class and let Ruby's metaprogramming magic do its work. [View source](lib/abject/encapsulation.rb).
+
+
+		class Foo
+			include Abject::Encapsulation
+
+			def bar
+				"bar"
+			end
+
+			def baz
+				"baz"
+			end
+
+			protects :baz
+
+		end
+
+		p Foo.new.bar # => "bar"
+		p Foo.new.baz # => nil
+
+
+
+---
 
 ## Contributing
 
