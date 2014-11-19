@@ -145,6 +145,24 @@ The Abject gem provides an elegant means of protecting methods from any unwanted
 		p Foo.new.baz # => nil
 
 
+### DRY
+
+Don’t Repeat Yourself (DRY) is a principle of software development, aimed at reducing repetition of information of all kinds, especially useful in multi-tier architectures. The DRY principle is stated as “Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.”
+
+The antonym of DRY is, obviously, WET: Write Everything Twice.  When the DRY principle is applied successfully, a modification of any single element of a system does not require a change in other logically unrelated elements. Unlike other less ambitious software developers however, the Abject-O Programmer doesn't myopically constrain the application these principles to their own code.  Ubiquitous distributed computing requires that the single source of truth of one's code base be extended to entire internet.
+
+
+		class FizzBuzzer
+			include Abject::DRY
+
+				def fizzbuzz(number)
+					url = 'http://stackoverflow.com/questions/24435547/ruby-fizzbuzz-not-working-as-expected#24435693'
+					adjustments = {'puts' => 'return', 'def fizzbuzz(n)' => 'lambda do |n|'}
+					stackoverflow(url, adjustments).call(number).last.to_s
+				end
+
+		end
+
 
 ---
 
