@@ -1,5 +1,2 @@
-require "abject/version"
-
-module Abject
-  # Your code goes here...
-end
+require 'abject/version'
+require 'abject/inheritance'
