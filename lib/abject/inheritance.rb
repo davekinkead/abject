@@ -1,4 +1,4 @@
-require 'abject/reader'
+require_relative 'reader'
 
 module Abject
 
